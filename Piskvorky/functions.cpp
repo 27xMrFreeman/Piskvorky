@@ -5,8 +5,8 @@ char** arr;
 double arrSize;
 int* popis;
 int r, c;
-char name1[100];
-char name2[100];
+char name1[50];
+char name2[50];
 char name_tmp[100];
 int x;
 int y;
@@ -15,6 +15,7 @@ int playerIndex;
 int overlap;
 int hasMarker[3][3];
 int currentMarker;
+FILE* names, lead;
 
 void boardSize()
 {
@@ -48,6 +49,7 @@ void boardSize()
 	}
 
 	while (getchar() != '\n');
+	system("cls");
 }
 
 void firstPlayer()					// náhodně určí prvního hráče spolu s jeho indexem
@@ -71,21 +73,49 @@ void firstPlayer()					// náhodně určí prvního hráče spolu s jeho indexem
 
 void playerNames()					// input jmen hráčů
 {
+	fopen_s(&names, "names.txt", "r+");			// otevření souboru se jmény, soubor musí existovat
+	if (names == NULL)							// kontrola jestli se otevřel
+	{
+		printf("Error opening Names file");
+		return;
+	}
 
-	printf("Zadej jmeno a prijmeni: ");
-	scanf_s("%[^\n]s", name1, 100);
+	int t = 0;
+	printf("1: Enter player names\n2: Load names from previous game\n");		// menu výběru
+	nameinput:
+	scanf_s("%d", &t);
 	while (getchar() != '\n');
+	system("cls");
 
-	printf("Zadej jmeno a prijmeni: ");
-	scanf_s("%[^\n]s", name2, 100);
-	while (getchar() != '\n');
+	if (t == 1) {																// ruční zadání jmen
+		printf("Zadej jmeno a prijmeni: ");
+		scanf_s("%[^\n]s", name1, 50);
+		while (getchar() != '\n');
+
+		printf("Zadej jmeno a prijmeni: ");
+		scanf_s("%[^\n]s", name2, 50);
+		while (getchar() != '\n');
+
+		fprintf(names, "%s\n%s", name1, name2);									// zapsání jmen do souboru names.txt
+	}
+	else if (t == 2) {															// nahrání jmen z minulé hry
+		fscanf_s(names, "%[^\n]s%[^\n]s", name1, 50, name2, 50);
+	}
+	else {																		// kontrola správného výběru
+		printf("Choose valid option");
+		goto nameinput;
+	}
+
+	fseek(names, 0, SEEK_SET);													// vrácení kurzoru na začátek souboru names.txt
+	fclose(names);
+
 }
 
 void drawBoard()					// vykresluje herní pole
 {
 	printf("    ||");					// odsazení popisků sloupců
 
-	for (int count = 0; count < arrSize; count++)		// printing poopisků sloupců
+	for (int count = 0; count < arrSize; count++)		// printing popisků sloupců
 	{
 		popis[count] = count + 1;
 		if (popis[count] >= 10)
