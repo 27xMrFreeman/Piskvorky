@@ -245,17 +245,54 @@ void currentPlayer()				// mění playerIndex, tzn hráče na tahu
 	}
 }
 
-//void checkWin()
-//{
-//	if (hasMarker[1][1] == 1)
-//	{
-//		if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] == 'X')
-//		{
-//			printf("X won");
-//		}
-//		else if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] == 'O')
-//		{
-//			printf("O won");
-//		}
-//	}
-//}
+int checkWin()
+{
+
+	for (i = 0; i <= (arrSize - 3); i++)
+		{
+			for (j = 0; j <= (arrSize - 3); j++)
+			{
+				char arrCheck[3][3] =
+				{ arr[i][j], arr[i][j+1], arr[i][j+2],
+				arr[i+1][j],arr[i + 1][j + 1],arr[i + 1][j + 2],
+				arr[i+2][j], arr[i + 2][j + 1], arr[i + 2][j + 2] };
+
+				//check rows
+				for (int k = 0; k < 3; k++)
+				{
+					if (arrCheck[k][0] == arrCheck[k][1] && arrCheck[k][0] == arrCheck[k][2])
+					{
+						return arrCheck[k][0];
+					}
+				}
+				//check columns
+				for (int k = 0; k < 3; k++)
+				{
+					if (arrCheck[0][k] == arrCheck[1][k] && arrCheck[0][k] == arrCheck[2][k])
+					{
+						return arrCheck[0][k];
+					}
+				}
+				//check diagonals
+				if (arrCheck[0][0] == arrCheck[1][1] && arrCheck[0][0] == arrCheck[2][2])
+				{
+					return arrCheck[0][0];
+				}
+				if (arrCheck[0][2] == arrCheck[1][1] && arrCheck[0][2] == arrCheck[2][0])
+				{
+					return arrCheck[0][2];
+				}
+
+			
+			}
+
+		}
+
+		return 1;
+}
+
+void printWinner(int winner)
+{
+	printf("Winner is %d", winner);
+	while (getchar() != '\n');
+}

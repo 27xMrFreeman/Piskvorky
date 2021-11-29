@@ -17,7 +17,7 @@ int main()
 	//getchar();
 
 
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < arrSize*arrSize; i++)
 	{
 		system("cls");
 
@@ -25,8 +25,11 @@ int main()
 
 		placeMarker();
 
-		//checkWin;
+		int winner = checkWin();
+	
+		printWinner(winner);
 
+		while (getchar() != '\n');
 
 	}
 

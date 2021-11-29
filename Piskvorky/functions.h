@@ -6,4 +6,5 @@ void drawBoard();
 void placeMarker();
 void overlapCheck();
 void currentPlayer();
-//void checkWin();
+int checkWin();
+void printWinner(int winner);
