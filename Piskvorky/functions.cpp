@@ -219,7 +219,7 @@ int overlapCheck()					// kontrola jestli na zadaných souřadnicích už není 
 {
 	int overlap;
 
-	if (arr[x - 1][y - 1] == 'X' || arr[x - 1][y - 1] == 'O')
+	if (arr[x - 1][y - 1] != 32)
 	{
 		overlap = 1;
 	}
