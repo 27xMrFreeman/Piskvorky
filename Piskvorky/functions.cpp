@@ -3,7 +3,6 @@
 
 int** arr;
 int* popis;
-int r, c;
 char name1[50];
 char name2[50];
 char name_tmp[100];
@@ -19,12 +18,10 @@ int boardSize()								// vrací velikost pole
 	int arrSize;
 	printf("Enter array size: \n");	// user input velikosti pole
 	scanf_s("%d", &arrSize);
-	r = arrSize;
-	c = arrSize;
 
 	// dynamická alokace herního pole (2D)
 	arr = (int**)malloc(arrSize * sizeof(int*));
-	for (int i = 0; i < r; i++)
+	for (int i = 0; i < arrSize; i++)
 	{
 		arr[i] = (int*)malloc(arrSize * sizeof(int));
 	};
@@ -94,10 +91,10 @@ nameinput:
 		scanf_s("%[^\n]s", name2, 50);
 		while (getchar() != '\n');
 
-		fprintf(names, "%s\n%s", name1, name2);									// zapsání jmen do souboru names.txt
+		fprintf(names, "%s, %s", name1, name2);									// zapsání jmen do souboru names.txt
 	}
 	else if (t == 2) {															// nahrání jmen z minulé hry
-		fscanf_s(names, "%[^\n]s%[^\n]s", name1, 50, name2, 50);
+		fscanf_s(names, "%[^,],%[^\n]", name1, 50, name2, 50);
 	}
 	else {																		// kontrola správného výběru
 		printf("Please choose a valid option\n");
@@ -142,7 +139,7 @@ void drawBoard(int arrSize)					// vykresluje herní pole
 		};
 	};*/
 
-	for (int i = 0; i < r; i++)			// printing popisků řádků a herního pole
+	for (int i = 0; i < arrSize; i++)			// printing popisků řádků a herního pole
 	{
 		popis[i] = i + 1;				// popisky řádků
 		if (popis[i] >= 10)
@@ -152,7 +149,7 @@ void drawBoard(int arrSize)					// vykresluje herní pole
 		else
 			printf(" %d  ||", popis[i]);	
 
-		for (int j = 0; j < c; j++)			// herní pole
+		for (int j = 0; j < arrSize; j++)			// herní pole
 		{
 			printf("%c |", arr[i][j]);
 		};
@@ -252,7 +249,7 @@ int checkWin(int arrSize)
 		{
 			for (int j = 0; j <= (arrSize - 3); j++)
 			{
-				char arrCheck[3][3] =
+				int arrCheck[3][3] =
 				{ arr[i][j], arr[i][j+1], arr[i][j+2],
 				arr[i+1][j],arr[i + 1][j + 1],arr[i + 1][j + 2],
 				arr[i+2][j], arr[i + 2][j + 1], arr[i + 2][j + 2] };
