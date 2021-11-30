@@ -65,13 +65,6 @@ void firstPlayer()					// náhodně určí prvního hráče spolu s jeho indexem
 
 void playerNames()					// input jmen hráčů
 {
-	fopen_s(&names, "names.txt", "r+");			// otevření souboru se jmény, soubor musí existovat
-	if (names == NULL)							// kontrola jestli se otevřel
-	{
-		printf("Error opening Names file");
-		return;
-	}
-
 	int t = 0;
 nameinput:
 	printf("1: Enter player names\n2: Load names from previous game\n");		// menu výběru
@@ -80,6 +73,12 @@ nameinput:
 	system("cls");
 
 	if (t == 1) {																// ruční zadání jmen
+		fopen_s(&names, "names.txt", "w+");										// vytvoření souboru pro čtení i zápis
+		if (names == NULL)														// kontrola jestli se vytvořil
+		{
+			printf("Error creating names.txt file");
+			return;
+		}
 		printf("Zadej jmeno a prijmeni: ");
 		scanf_s("%[^\n]s", name1, 50);
 		while (getchar() != '\n');
@@ -91,6 +90,13 @@ nameinput:
 		fprintf(names, "%s, %s", name1, name2);									// zapsání jmen do souboru names.txt
 	}
 	else if (t == 2) {															// nahrání jmen z minulé hry
+		fopen_s(&names, "names.txt", "r+");										// otevření souboru pro čtení i zápis
+		if (names == NULL)														// kontrola jestli se otevřel
+		{
+			printf("Error opening names.txt file");
+			return;
+		}
+
 		fscanf_s(names, "%[^,],%[^\n]", name1, 50, name2, 50);
 	}
 	else {																		// kontrola správného výběru
