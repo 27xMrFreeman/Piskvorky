@@ -3,11 +3,8 @@
 
 int** arr;
 int* popis;
-char name1[50];
-char name2[50];
-char name_tmp[100];
-int x;
-int y;
+char name1[50], name2[50];
+int x, y;
 int playerIndex;
 int hasMarker[3][3];
 int currentMarker;
