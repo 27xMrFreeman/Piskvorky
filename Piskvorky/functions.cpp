@@ -1,8 +1,7 @@
 ﻿#include "Piskvorky.h"
 #include "functions.h"
 
-char** arr;
-double arrSize;
+int** arr;
 int* popis;
 int r, c;
 char name1[50];
@@ -10,45 +9,44 @@ char name2[50];
 char name_tmp[100];
 int x;
 int y;
-int i = 0, j = 0;
 int playerIndex;
-int overlap;
 int hasMarker[3][3];
 int currentMarker;
 FILE* names, lead;
 
-void boardSize()
+int boardSize()								// vrací velikost pole
 {
-
+	int arrSize;
 	printf("Enter array size: \n");	// user input velikosti pole
-	scanf_s("%lf", &arrSize);
+	scanf_s("%d", &arrSize);
 	r = arrSize;
 	c = arrSize;
 
 	// dynamická alokace herního pole (2D)
-	arr = (char**)malloc(100 * sizeof(char*));
-	for (i = 0; i < r; i++)
+	arr = (int**)malloc(arrSize * sizeof(int*));
+	for (int i = 0; i < r; i++)
 	{
-		arr[i] = (char*)malloc(100 * sizeof(char));
+		arr[i] = (int*)malloc(arrSize * sizeof(int));
 	};
 	if (arr == NULL)				// kdyby náhodou byl arr pointer NULL i při runtime
 	{
 		printf("Error: Pointer arr NULL");
-		return;
+		return -1;
 	}
 	// dynamická alokace pole pro popis souřadnic (1D)
 	popis = (int*)calloc(arrSize, sizeof(int));
 
 	// plnění herního pole mezerama
-	for (i = 0; i < arrSize; i++)
+	for (int i = 0; i < arrSize; i++)
 	{
-		for (j = 0; j < arrSize; j++)
+		for (int j = 0; j < arrSize; j++)
 		{
-			arr[i][j] = ' ';
+			arr[i][j] = 32;
 		}
 	}
 
 	while (getchar() != '\n');
+	return arrSize;
 	system("cls");
 }
 
@@ -81,8 +79,8 @@ void playerNames()					// input jmen hráčů
 	}
 
 	int t = 0;
+nameinput:
 	printf("1: Enter player names\n2: Load names from previous game\n");		// menu výběru
-	nameinput:
 	scanf_s("%d", &t);
 	while (getchar() != '\n');
 	system("cls");
@@ -102,7 +100,7 @@ void playerNames()					// input jmen hráčů
 		fscanf_s(names, "%[^\n]s%[^\n]s", name1, 50, name2, 50);
 	}
 	else {																		// kontrola správného výběru
-		printf("Choose valid option");
+		printf("Please choose a valid option\n");
 		goto nameinput;
 	}
 
@@ -111,7 +109,7 @@ void playerNames()					// input jmen hráčů
 
 }
 
-void drawBoard()					// vykresluje herní pole
+void drawBoard(int arrSize)					// vykresluje herní pole
 {
 	printf("    ||");					// odsazení popisků sloupců
 
@@ -126,7 +124,7 @@ void drawBoard()					// vykresluje herní pole
 		printf("%d |", popis[count]);
 	}
 	printf("\n");
-	for (i = 0; i < arrSize; i++)
+	for (int i = 0; i < arrSize; i++)
 	{
 		if (i == 0)
 		{
@@ -144,7 +142,7 @@ void drawBoard()					// vykresluje herní pole
 		};
 	};*/
 
-	for (i = 0; i < r; i++)			// printing popisků řádků a herního pole
+	for (int i = 0; i < r; i++)			// printing popisků řádků a herního pole
 	{
 		popis[i] = i + 1;				// popisky řádků
 		if (popis[i] >= 10)
@@ -154,7 +152,7 @@ void drawBoard()					// vykresluje herní pole
 		else
 			printf(" %d  ||", popis[i]);	
 
-		for (j = 0; j < c; j++)			// herní pole
+		for (int j = 0; j < c; j++)			// herní pole
 		{
 			printf("%c |", arr[i][j]);
 		};
@@ -162,7 +160,7 @@ void drawBoard()					// vykresluje herní pole
 	};
 }
 
-void placeMarker()
+void placeMarker(int arrSize)
 {
 	// přiřadí jménům index a marker
 	if (playerIndex == 1)
@@ -201,7 +199,7 @@ y_input:
 	};
 
 	// kontrola jestli na zadaných souřadnicích už není marker
-	overlapCheck();
+	int overlap = overlapCheck();
 
 	if (overlap == 1)
 	{
@@ -220,8 +218,10 @@ y_input:
 
 }
 
-void overlapCheck()					// kontrola jestli na zadaných souřadnicích už není marker
+int overlapCheck()					// kontrola jestli na zadaných souřadnicích už není marker
 {
+	int overlap;
+
 	if (arr[x - 1][y - 1] == 'X' || arr[x - 1][y - 1] == 'O')
 	{
 		overlap = 1;
@@ -230,7 +230,7 @@ void overlapCheck()					// kontrola jestli na zadaných souřadnicích už není
 	{
 		overlap = 0;
 	}
-
+	return overlap;
 }
 
 void currentPlayer()				// mění playerIndex, tzn hráče na tahu
@@ -245,12 +245,12 @@ void currentPlayer()				// mění playerIndex, tzn hráče na tahu
 	}
 }
 
-int checkWin()
+int checkWin(int arrSize)
 {
 
-	for (i = 0; i <= (arrSize - 3); i++)
+	for (int i = 0; i <= (arrSize - 3); i++)
 		{
-			for (j = 0; j <= (arrSize - 3); j++)
+			for (int j = 0; j <= (arrSize - 3); j++)
 			{
 				char arrCheck[3][3] =
 				{ arr[i][j], arr[i][j+1], arr[i][j+2],
@@ -260,7 +260,7 @@ int checkWin()
 				//check rows
 				for (int k = 0; k < 3; k++)
 				{
-					if (arrCheck[k][0] == arrCheck[k][1] && arrCheck[k][0] == arrCheck[k][2])
+					if (arrCheck[k][0] == arrCheck[k][1] && arrCheck[k][0] == arrCheck[k][2] && arrCheck[k][0] != 32)
 					{
 						return arrCheck[k][0];
 					}
@@ -268,17 +268,17 @@ int checkWin()
 				//check columns
 				for (int k = 0; k < 3; k++)
 				{
-					if (arrCheck[0][k] == arrCheck[1][k] && arrCheck[0][k] == arrCheck[2][k])
+					if (arrCheck[0][k] == arrCheck[1][k] && arrCheck[0][k] == arrCheck[2][k] && arrCheck[0][k] != 32)
 					{
 						return arrCheck[0][k];
 					}
 				}
 				//check diagonals
-				if (arrCheck[0][0] == arrCheck[1][1] && arrCheck[0][0] == arrCheck[2][2])
+				if (arrCheck[0][0] == arrCheck[1][1] && arrCheck[0][0] == arrCheck[2][2] && arrCheck[0][0] != 32)
 				{
 					return arrCheck[0][0];
 				}
-				if (arrCheck[0][2] == arrCheck[1][1] && arrCheck[0][2] == arrCheck[2][0])
+				if (arrCheck[0][2] == arrCheck[1][1] && arrCheck[0][2] == arrCheck[2][0] && arrCheck[0][2] != 32)
 				{
 					return arrCheck[0][2];
 				}
@@ -288,11 +288,19 @@ int checkWin()
 
 		}
 
-		return 1;
+		return 0;
 }
 
 void printWinner(int winner)
 {
-	printf("Winner is %d", winner);
-	while (getchar() != '\n');
+	if (winner == 79)							// 79 je O v ASCII 
+	{
+		printf("Winner is %s", name1);			// na začátku se name1 vždy přiřadí kolečko
+		while (getchar() != '\n');
+	}
+	else										// jiná hodnota než 88 (X v ASCII nemůže nastat)
+	{
+		printf("Winner is %s", name2);			// name2 má vždy křížek
+		while (getchar() != '\n');
+	}
 }

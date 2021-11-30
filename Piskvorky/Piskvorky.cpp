@@ -10,7 +10,7 @@ int main()
 {
 	srand(time(NULL));
 
-	boardSize();
+	int arrSize = boardSize();
 	playerNames();
 	firstPlayer();
 
@@ -21,14 +21,18 @@ int main()
 	{
 		system("cls");
 
-		drawBoard();
+		drawBoard(arrSize);
 
-		placeMarker();
+		placeMarker(arrSize);
 
-		int winner = checkWin();
-	
-		printWinner(winner);
-
+		int winner = checkWin(arrSize);
+		
+		if (winner != 0)
+		{
+			system("cls");
+			drawBoard(arrSize);
+			printWinner(winner);
+		}
 		while (getchar() != '\n');
 
 	}
