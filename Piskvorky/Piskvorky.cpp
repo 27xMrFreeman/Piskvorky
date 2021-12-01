@@ -8,11 +8,12 @@ using namespace std;
 
 int main()
 {
-	srand(time(NULL));
-
+	
 	int arrSize = boardSize();
+	
 	playerNames();
-	firstPlayer();
+
+	firstPlayer();                        //toto by som prerobila na int funkciu - budeme mat o jednu globalnu premennu menej
 
 	//getchar();
 

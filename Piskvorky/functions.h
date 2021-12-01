@@ -8,3 +8,4 @@ int overlapCheck();
 void currentPlayer();
 int checkWin(int arrSize);
 void printWinner(int winner);
+void leaderboard();
