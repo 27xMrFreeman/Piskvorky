@@ -1,11 +1,12 @@
-
+#define NAME_SIZE 20
 int boardSize();
 void playerNames();
-void firstPlayer();
+int firstPlayer();
 void drawBoard(int arrSize);
-void placeMarker(int arrSize);
-int overlapCheck();
-void currentPlayer();
+int placeMarker(int arrSize,int playerIndex1);
+int overlapCheck(int x, int y);
+int currentPlayer(int playerIndex);
 int checkWin(int arrSize);
 void printWinner(int winner);
-void leaderboard();
+int gameOver();
+void leaderboard(int winner);

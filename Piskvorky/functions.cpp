@@ -3,25 +3,30 @@
 
 int** arr;
 int* popis;
-char name1[50], name2[50];
-int x, y;
-int playerIndex;
-int hasMarker[3][3];
-int currentMarker;
-FILE* lead;
+
+struct t_score{
+	char name [NAME_SIZE];
+	int win = 0;
+}player1,player2;
 
 int boardSize()								          // vrací velikost pole
 {
+	start:
 	int arrSize;
-	printf("Zadaj velkost hracieho pola: \n");	     // user input velikosti pole
+	printf("Choose board size: \n");	     // user input velikosti pole
 	scanf_s("%d", &arrSize);
-
+	system("cls");
+	if (arrSize < 3)
+	{
+		printf("Please choose a valid option (Minimal size is 3)\n");
+		goto start;
+	}
 	                                                 // dynamická alokace herního pole (2D)¨'
 	arr = (int**)malloc(arrSize * sizeof(int*));
 	for (int i = 0; i < arrSize; i++)
 	{
 		arr[i] = (int*)malloc(arrSize * sizeof(int));
-	};
+	}
 	if (arr == NULL)				                // kdyby náhodou byl arr pointer NULL i při runtime
 	{
 		printf("Error: Pointer arr NULL");
@@ -44,27 +49,24 @@ int boardSize()								          // vrací velikost pole
 	
 }
 
-void firstPlayer()					// náhodně určí prvního hráče spolu s jeho indexem
+int firstPlayer()					// náhodně určí prvního hráče spolu s jeho indexem
 {
+	int playerIndex;
 	srand(time(NULL));
 	if (rand() % 2 == 0)
 	{
 		playerIndex = 1;
-		printf("Player %s is starting\nPress enter to continue", name1);
+		printf("Player %s is starting\nPress enter to continue", player1.name);
 	}
 	else
 	{
-		/*playerIndex = 1;		// vždy budou začínat kolečka
-		name_tmp = name1;
-		name1 = name2;
-		name2 = name_tmp;
-		printf("Player %s is starting", name1);*/
 		playerIndex = 2;
-		printf("Player %s is starting\nPress enter to continue", name2);		// nebudou vždy začínat kolečka
-	};
+		printf("Player %s is starting\nPress enter to continue", player2.name);	// nebudou vždy začínat kolečka
+	}
+	return playerIndex;
 }
 
-void playerNames()					// input jmen hráčů
+void playerNames()																// input jmen hráčů
 {
 	FILE* names;
 	int t = 0;
@@ -74,24 +76,27 @@ nameinput:
 	while (getchar() != '\n');
 	system("cls");
 
-	if (t == 1) {																// ruční zadání jmen
+	if (t == 1) 
+	{																			// ruční zadání jmen
 		fopen_s(&names, "names.txt", "w+");										// vytvoření souboru pro čtení i zápis
 		if (names == NULL)														// kontrola jestli se vytvořil
 		{
 			printf("Error creating names.txt file");
 			return;
 		}
-		printf("Zadej jmeno a prijmeni: ");
-		scanf_s("%[^\n]", name1, 50);
+		printf("Choose first name: ");
+		scanf_s("%[^\n]", player1.name, 20);
 		while (getchar() != '\n');
 
-		printf("Zadej jmeno a prijmeni: ");
-		scanf_s("%[^\n]", name2, 50);
+		printf("Choose second name: ");
+		scanf_s("%[^\n]", player2.name, 20);
 		while (getchar() != '\n');
 
-		fprintf(names, "%s, %s", name1, name2);									// zapsání jmen do souboru names.txt
+		fprintf(names, "%s, %s", player1.name, player2.name);					// zapsání jmen do souboru names.txt
 	}
-	else if (t == 2) {															// nahrání jmen z minulé hry
+
+	else if (t == 2) 
+	{																			// nahrání jmen z minulé hry
 		fopen_s(&names, "names.txt", "r+");										// otevření souboru pro čtení i zápis
 		if (names == NULL)														// kontrola jestli se otevřel
 		{
@@ -99,10 +104,12 @@ nameinput:
 			return;
 		}
 
-		fscanf_s(names, "%[^,],%[^\n]", name1, 50, name2, 50);
+		fscanf_s(names, "%[^,],%[^\n]", player1.name, 20, player2.name, 20);
 	}
-	else {																		// kontrola správného výběru
-		printf("Please choose a valid option\n");
+
+	else 
+	{																			// kontrola správného výběru
+		printf("Please choose a valid option\n");	
 		goto nameinput;
 	}
 
@@ -111,11 +118,11 @@ nameinput:
 
 }
 
-void drawBoard(int arrSize)					// vykresluje herní pole
+void drawBoard(int arrSize)					                       // vykresluje herní pole
 {
-	printf("    ||");					// odsazení popisků sloupců
+	printf("    ||");					                           // odsazení popisků sloupců
 
-	for (int count = 0; count < arrSize; count++)		// printing popisků sloupců
+	for (int count = 0; count < arrSize; count++)		           // printing popisků sloupců
 	{
 		popis[count] = count + 1;
 		if (popis[count] >= 10)
@@ -136,13 +143,6 @@ void drawBoard(int arrSize)					// vykresluje herní pole
 		printf("====");
 	}
 	printf("\n");
-	/*for (i = 0; i < r; i++)
-	{
-		for (j = 0; j < c; j++)			plnění jedničkama pro testing
-		{
-			arr[i][j] = 1;
-		};
-	};*/
 
 	for (int i = 0; i < arrSize; i++)			// printing popisků řádků a herního pole
 	{
@@ -160,31 +160,31 @@ void drawBoard(int arrSize)					// vykresluje herní pole
 		};
 		printf("\n");
 	};
-}
+} 
 
-void placeMarker(int arrSize)
-{
-	// přiřadí jménům index a marker
-	if (playerIndex == 1)
+int placeMarker(int arrSize,int playerIndex1)
+{			
+	int x, y;
+	int currentMarker;
+	if (playerIndex1 == 1)
 	{
-		printf("Its %s s turn\n", name1);
+		printf("Its %s s turn\n", player1.name);
 		currentMarker = 'O';
 	}
-	else if (playerIndex == 2)
+	else if (playerIndex1 == 2)
 	{
-		printf("Its %s s turn\n", name2);
+		printf("Its %s s turn\n", player2.name);
 		currentMarker = 'X';
 	}
 	else
 	{
-		printf("it brokey lmao\n"); // pokud je playerIndex neočekávaná hodnota
-	};
-
-	// user input polohy markeru
+		printf("it brokey lmao\n");			// pokud je playerIndex neočekávaná hodnota
+	}
+											// user input polohy markeru
 x_input:
 	printf("Zadaj x: ");
-	scanf_s("%d", &y);		
-	while (getchar() != '\n');              // pošéfit aby nešel zadat charakter místo čísla
+	scanf_s(" %d", &y);	
+	while (getchar() != '\n');              
 	if (y < 1 || y > arrSize)				// kontrola zda je X v poli
 	{
 		printf("Input valid position\n");
@@ -193,7 +193,7 @@ x_input:
 
 y_input:
 	printf("Zadaj y: ");
-	scanf_s("%d", &x);
+	scanf_s(" %d", &x);
 	while (getchar() != '\n');
 	if (x < 1 || x > arrSize)				// kontrola zda je Y v poli
 	{
@@ -201,8 +201,8 @@ y_input:
 		goto y_input;
 	};
 
-	// kontrola jestli na zadaných souřadnicích už není marker
-	int overlap = overlapCheck();
+											// kontrola jestli na zadaných souřadnicích už není marker
+	int overlap = overlapCheck(x,y);
 
 	if (overlap == 1)
 	{
@@ -211,17 +211,14 @@ y_input:
 	}
 	else
 	{
+		int hasMarker[3][3];
 		arr[x - 1][y - 1] = currentMarker;
 		hasMarker[x - 1][y - 1] = 1;
 	}
+	return 0;
+ }
 
-	// změní playerIndex
-	
-	currentPlayer();
-
-}
-
-int overlapCheck()					// kontrola jestli na zadaných souřadnicích už není marker
+int overlapCheck(int x, int y)					// kontrola jestli na zadaných souřadnicích už není marker
 {
 	int overlap;
 
@@ -236,7 +233,7 @@ int overlapCheck()					// kontrola jestli na zadaných souřadnicích už není 
 	return overlap;
 }
 
-void currentPlayer()				// mění playerIndex, tzn hráče na tahu
+int currentPlayer(int playerIndex)				// mění playerIndex, tzn hráče na tahu
 {
 	if (playerIndex == 1)
 	{
@@ -246,7 +243,8 @@ void currentPlayer()				// mění playerIndex, tzn hráče na tahu
 	{
 		playerIndex -= 1;
 	}
-}
+	return playerIndex;
+}												// změní playerIndex
 
 int checkWin(int arrSize)
 {
@@ -296,32 +294,68 @@ int checkWin(int arrSize)
 
 void printWinner(int winner)
 {
-	if (winner == 79)							// 79 je O v ASCII 
+	if (winner == 79)										// 79 je O v ASCII 
 	{
-		printf("Winner is %s", name1);			// na začátku se name1 vždy přiřadí kolečko
+		printf("\n   Winner is %s", player1.name);			// na začátku se name1 vždy přiřadí kolečko
 		while (getchar() != '\n');
+		player1.win = ++player1.win;
 	}
-	else										// jiná hodnota než 88 (X v ASCII nemůže nastat)
+	else													// jiná hodnota než 88 (X v ASCII nemůže nastat)
 	{
-		printf("Winner is %s", name2);			// name2 má vždy křížek
+		printf("\n   Winner is %s", player2.name);			// name2 má vždy křížek
 		while (getchar() != '\n');
+		player2.win = ++player2.win;
 	}
 }
 
-
+int gameOver()
+{
+nameinput:
+	int t;
+	system("cls");
+	printf("1: Quit game\n2: Restart game\n3: Show leaderboard\n");				// menu výběru
+	scanf_s("%d", &t);
+	while (getchar() != '\n');
+	if (t == 3)
+	{
+		system("cls");
+		printf("   %s:%d\n", player1.name, player1.win);
+		printf("  %s:%d", player2.name, player2.win);
+		while (getchar() != '\n');
+		goto nameinput;
+	}
+	if (t != 1 && t != 2 )
+	{														// kontrola správného výběru
+		printf("Please choose a valid option\n");
+		goto nameinput;
+	}
+	system("cls");
+	return t;
+}
 
 void leaderboard(int winner) {
 	FILE* lead;
-	fopen_s(&lead, "leaderboard.txt", "r+");
+	char winplayer[NAME_SIZE];
+	fopen_s(&lead, "leaderboard.txt", "w+");
 	if (lead == NULL) {
-		fopen_s(&lead, "leaderboard.txt", "w+");
+		printf("Error creating names.txt file");
+		return;
 	}
-	switch (winner == 79)
+	switch (winner)
 	{
-	case 1:
-		char winplayer[50] = *name1;
-			break;
+	case 79:
+		for (int i = 0; i < NAME_SIZE; i++) {
+			winplayer[i] = player1.name[i];
+		}
+		break;
+	case 88:
+		for (int i = 0; i < NAME_SIZE; i++) {
+			winplayer[i] = player2.name[i];
+		}
 	}
-	int count = 0;
-	fprintf_s(lead, "%s\n", winplayer);
+	fprintf(lead, "%s %d\n", player1.name,player1.win);
+	fprintf(lead, "%s %d\n", player2.name, player2.win);
+
+	//int count = 0;
+	//fprintf_s(lead, "%s\n", winplayer);
 }
