@@ -24,7 +24,8 @@ int main()
 			system("cls");
 			drawBoard(arrSize);
 			printWinner(winner);
-			leaderboard();
+			/*leaderboard();*/
+			sortScoreboard();
 			int x = gameOver();
 			if (x == 2)
 			{

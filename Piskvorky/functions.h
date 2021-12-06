@@ -12,3 +12,4 @@ void printWinner(int winner);
 int gameOver();
 void leaderboard();
 void printLead();
+void sortScoreboard();
