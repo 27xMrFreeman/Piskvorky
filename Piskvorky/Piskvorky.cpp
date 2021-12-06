@@ -24,19 +24,19 @@ int main()
 			system("cls");
 			drawBoard(arrSize);
 			printWinner(winner);
-			void leaderboard(int winner);
+			leaderboard();
 			int x = gameOver();
 			if (x == 2)
 			{
 				goto Start;
 			}
-			
+			 
 			return 0;
 		}
 	}
 	printf("Gamo over - DRAW");
 	while (getchar() != '\n');
-	void leaderboard(int winner);
+	leaderboard();
 	int x = gameOver();
 	if (x == 2)
 	{

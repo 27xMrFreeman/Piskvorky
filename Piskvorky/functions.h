@@ -1,4 +1,5 @@
 #define NAME_SIZE 20
+#define SIZE 10
 int boardSize();
 void playerNames();
 int firstPlayer();
@@ -9,4 +10,5 @@ int currentPlayer(int playerIndex);
 int checkWin(int arrSize);
 void printWinner(int winner);
 int gameOver();
-void leaderboard(int winner);
+void leaderboard();
+void printLead();

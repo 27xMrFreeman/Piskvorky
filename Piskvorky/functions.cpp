@@ -3,6 +3,7 @@
 
 int** arr;
 int* popis;
+FILE* lead;
 
 struct t_score{
 	char name [NAME_SIZE];
@@ -104,7 +105,7 @@ nameinput:
 			return;
 		}
 
-		fscanf_s(names, "%[^,],%[^\n]", player1.name, 20, player2.name, 20);
+		fscanf_s(names, "%[^,],%[^\n]", player1.name, NAME_SIZE, player2.name, NAME_SIZE);
 	}
 
 	else 
@@ -319,43 +320,96 @@ nameinput:
 	if (t == 3)
 	{
 		system("cls");
-		printf("   %s:%d\n", player1.name, player1.win);
-		printf("  %s:%d", player2.name, player2.win);
-		while (getchar() != '\n');
+		printLead();
 		goto nameinput;
 	}
-	if (t != 1 && t != 2 )
+	if (t != 1 && t != 2 && t !=3)
 	{														// kontrola správného výběru
-		printf("Please choose a valid option\n");
 		goto nameinput;
 	}
 	system("cls");
 	return t;
 }
 
-void leaderboard(int winner) {
-	FILE* lead;
-	char winplayer[NAME_SIZE];
-	fopen_s(&lead, "leaderboard.txt", "w+");
-	if (lead == NULL) {
-		printf("Error creating names.txt file");
-		return;
-	}
-	switch (winner)
-	{
-	case 79:
-		for (int i = 0; i < NAME_SIZE; i++) {
-			winplayer[i] = player1.name[i];
-		}
-		break;
-	case 88:
-		for (int i = 0; i < NAME_SIZE; i++) {
-			winplayer[i] = player2.name[i];
+void leaderboard() {
+	int index[SIZE];
+	typedef struct t_leaderBoard {
+		char name[NAME_SIZE];
+		int win;
+	}player;
+	player p[SIZE] = {};
+	fopen_s(&lead, "leaderboard.txt", "a+");								// otevření souboru pro připisování i čtení
+	if (lead == NULL) {														// kontrola jestli se otevřel
+		fopen_s(&lead, "leaderboard.txt", "w+");							// vytvoření souboru pro čtení i zápis
+		if (lead == NULL) {													// kontrola jestli se otevřel
+			printf("Error creating leaderboard.txt file");
+			return;
 		}
 	}
-	fprintf(lead, "%s %d\n", player1.name,player1.win);
-	fprintf(lead, "%s %d\n", player2.name, player2.win);
+	fprintf(lead, "%s %d", player1.name, player1.win);
+	fprintf(lead, " %s %d", player2.name, player2.win);
 
-	//int count = 0;
-	//fprintf_s(lead, "%s\n", winplayer);
+	/*for (int i = 0; i < SIZE && !feof(lead); i++)
+	{
+	*/	
+		
+
+		/*if (strcmp(p[i].name, player1.name) != 0) {
+			fopen_s(&lead, "leaderboard.txt", "r+");
+			fprintf(lead, "%s %d", player1.name, player1.win);
+			fclose(lead);
+		}
+		else if (strcmp(p[i].name, player2.name) != 0){
+			fopen_s(&lead, "leaderboard.txt", "r+");
+			fprintf(lead, " %s %d", player2.name, player2.win);
+			fclose(lead);
+		}
+		else {
+			fopen_s(&lead, "leaderboard.txt", "a+");
+			fprintf(lead, "%s %d", player1.name, player1.win);
+			fprintf(lead, " %s %d", player2.name, player2.win);
+			fclose(lead);
+		}*/
+	/*}*/
+	
+	fclose(lead);
 }
+
+void printLead() 
+{
+	int index[SIZE];
+	typedef struct t_leaderBoard {
+		char name[NAME_SIZE];
+		int win;
+	}player;
+	player p[SIZE] = {};
+	fopen_s(&lead, "leaderboard.txt", "r+");
+	if (lead == NULL) { printf("leaderboard.txt is NULL"); }
+	for (int i = 0; i < SIZE && !feof(lead); i++)
+	{
+		fscanf(lead, "%s %d%*c", p[i].name, &p[i].win);
+		printf("%s %d\n", p[i].name, p[i].win);
+	}
+	fclose(lead);
+	while (getchar() != '\n');
+}
+	
+	
+	
+	
+	
+	
+	
+	/*int i, j;
+	for (i = 0; i < SIZE; i++)								//simple initialization for the index array
+		index[i] = i;										//simple substitution sort, using the index
+	for (i = 0; i < SIZE - 1; i++) {
+		for (j = i + 1; j < SIZE; j++) {
+			if (p[index[i]].win < p[index[j]].win) {		//compare thru the index
+				int temp = index[i];						//and swap only the indices
+				index[i] = index[j];
+				index[j] = temp;
+			}
+		}
+	}
+}*/
