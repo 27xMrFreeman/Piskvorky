@@ -69,7 +69,7 @@ int firstPlayer()					// náhodně určí prvního hráče spolu s jeho indexem
 	else
 	{
 		playerIndex = 2;
-		printf("Player %s is starting\n", player2.name);	// nebudou vždy začínat kolečka
+		printf("Player %s is starting\n", player2.name);	
 		while (getchar() != '\n');
 	}
 	return playerIndex;
@@ -91,6 +91,7 @@ nameinput:
 		if (names == NULL)														// kontrola jestli se vytvořil
 		{
 			printf("Error creating names.txt file");
+			while (getchar() != '\n');
 			return;
 		}
 		printf("Choose first name: ");
@@ -109,8 +110,9 @@ nameinput:
 		fopen_s(&names, "names.txt", "r+");										// otevření souboru pro čtení i zápis
 		if (names == NULL)														// kontrola jestli se otevřel
 		{
-			printf("Error opening names.txt file");
-			return;
+			printf("No past games played to load names from, please choose option 1");
+			while (getchar() != '\n');
+			goto nameinput;
 		}
 
 		fscanf_s(names, "%[^,],%[^\n]", player1.name, NAME_SIZE, player2.name, NAME_SIZE);
@@ -346,57 +348,8 @@ nameinput:
 	return t;
 }
 
-void leaderboard() {
-	player p[SIZE] = {};
-	fopen_s(&lead, "leaderboard.txt", "a+");								// otevření souboru pro připisování i čtení
-	if (lead == NULL) {														// kontrola jestli se otevřel
-		fopen_s(&lead, "leaderboard.txt", "w+");							// vytvoření souboru pro čtení i zápis
-		if (lead == NULL) {													// kontrola jestli se otevřel
-			printf("Error creating leaderboard.txt file");
-			return;
-		}
-	}
-	fprintf(lead,"%s %d\n", player1.name, player1.win);
-	fprintf(lead,"%s %d\n", player2.name, player2.win);
-
-	/*for (int i = 0; i < SIZE && !feof(lead); i++)
-	{
-		/*if (strcmp(p[i].name, player1.name) != 0) {
-			fopen_s(&lead, "leaderboard.txt", "r+");
-			fprintf(lead, "%s %d", player1.name, player1.win);
-			fclose(lead);
-		}
-		else if (strcmp(p[i].name, player2.name) != 0){
-			fopen_s(&lead, "leaderboard.txt", "r+");
-			fprintf(lead, " %s %d", player2.name, player2.win);
-			fclose(lead);
-		}
-		else {
-			fopen_s(&lead, "leaderboard.txt", "a+");
-			fprintf(lead, "%s %d", player1.name, player1.win);
-			fprintf(lead, " %s %d", player2.name, player2.win);
-			fclose(lead);
-		}
-	}*/
-	
-	fclose(lead);
-}
-
 void printLead() 
 {
-	/*
-	if (player1.win != 0)
-	{
-		printf("%s %d\n", player1.name, player1.win);
-	}
-	if (player2.win != 0)
-	{
-		printf("%s %d\n", player2.name, player2.win);
-		while (getchar() != '\n');
-	}
-	while (getchar() != '\n');
-	*/
-
 	int howMany = 0;
 	player temp;
 	player p[SIZE] = {};
@@ -410,7 +363,7 @@ void printLead()
 	int i, j;
 	for (i = 0; i < howMany; i++)
 	{
-		for (j = 0; j < howMany - 1; j++)
+		for (j = 0; j < howMany-1; j++)
 		{
 			if (p[j].win < p[j + 1].win)
 			{
@@ -424,8 +377,6 @@ void printLead()
 			}
 		}
 	}
-
-
 	for (int i = 0; i < howMany-1; i++)
 	{
 		if (p[i].win != 0) {
@@ -436,5 +387,4 @@ void printLead()
 	}
 	fclose(lead);
 	while (getchar() != '\n');
-
 }    

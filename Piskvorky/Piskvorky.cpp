@@ -8,9 +8,10 @@ using namespace std;
 
 int main()
 {
-	Start:
-	int arrSize = boardSize();
+	printf("TIC-TAC-TOE\n");
+Start:
 	playerNames();
+	int arrSize = boardSize();
 	int playerIndex = firstPlayer();                       
 	for (int i = 0; i < arrSize*arrSize; i++)
 	{
@@ -24,7 +25,6 @@ int main()
 			system("cls");
 			drawBoard(arrSize);
 			printWinner(winner);
-			//leaderboard();
 			int x = gameOver();
 			if (x == 2)
 			{
@@ -34,9 +34,8 @@ int main()
 			return 0;
 		}
 	}
-	printf("Gamo over - DRAW");
+	printf("Game over - DRAW");
 	while (getchar() != '\n');
-	//leaderboard();
 	int x = gameOver();
 	if (x == 2)
 	{
