@@ -24,7 +24,7 @@ int main()
 			system("cls");
 			drawBoard(arrSize);
 			printWinner(winner);
-			leaderboard();
+			//leaderboard();
 			int x = gameOver();
 			if (x == 2)
 			{
@@ -36,7 +36,7 @@ int main()
 	}
 	printf("Gamo over - DRAW");
 	while (getchar() != '\n');
-	leaderboard();
+	//leaderboard();
 	int x = gameOver();
 	if (x == 2)
 	{

@@ -10,6 +10,12 @@ struct t_score{
 	int win = 0;
 }player1,player2;
 
+int index[SIZE];
+typedef struct t_leaderBoard {
+	char name[NAME_SIZE];
+	int win;
+}player;
+
 int boardSize()								          // vrací velikost pole
 {
 	start:
@@ -57,12 +63,14 @@ int firstPlayer()					// náhodně určí prvního hráče spolu s jeho indexem
 	if (rand() % 2 == 0)
 	{
 		playerIndex = 1;
-		printf("Player %s is starting\nPress enter to continue", player1.name);
+		printf("Player %s is starting\n", player1.name);
+		while (getchar() != '\n');
 	}
 	else
 	{
 		playerIndex = 2;
-		printf("Player %s is starting\nPress enter to continue", player2.name);	// nebudou vždy začínat kolečka
+		printf("Player %s is starting\n", player2.name);	// nebudou vždy začínat kolečka
+		while (getchar() != '\n');
 	}
 	return playerIndex;
 }
@@ -93,7 +101,7 @@ nameinput:
 		scanf_s("%[^\n]", player2.name, 20);
 		while (getchar() != '\n');
 
-		fprintf(names, "%s, %s", player1.name, player2.name);					// zapsání jmen do souboru names.txt
+		fprintf(names, "%s,%s", player1.name, player2.name);					// zapsání jmen do souboru names.txt
 	}
 
 	else if (t == 2) 
@@ -295,18 +303,25 @@ int checkWin(int arrSize)
 
 void printWinner(int winner)
 {
+	fopen_s(&lead, "leaderboard.txt", "a+");
+	if (lead == NULL) { fopen_s(&lead, "leaderboard.txt", "w+"); }
 	if (winner == 79)										// 79 je O v ASCII 
 	{
 		printf("\n   Winner is %s", player1.name);			// na začátku se name1 vždy přiřadí kolečko
 		while (getchar() != '\n');
 		player1.win = ++player1.win;
+		fprintf(lead, "%s %d\n", player1.name, player1.win);
+		player1.win = 0;
 	}
 	else													// jiná hodnota než 88 (X v ASCII nemůže nastat)
 	{
 		printf("\n   Winner is %s", player2.name);			// name2 má vždy křížek
 		while (getchar() != '\n');
 		player2.win = ++player2.win;
+		fprintf(lead, "%s %d\n", player2.name, player2.win);
+		player2.win = 0;
 	}
+	fclose(lead);
 }
 
 int gameOver()
@@ -332,11 +347,6 @@ nameinput:
 }
 
 void leaderboard() {
-	int index[SIZE];
-	typedef struct t_leaderBoard {
-		char name[NAME_SIZE];
-		int win;
-	}player;
 	player p[SIZE] = {};
 	fopen_s(&lead, "leaderboard.txt", "a+");								// otevření souboru pro připisování i čtení
 	if (lead == NULL) {														// kontrola jestli se otevřel
@@ -346,14 +356,11 @@ void leaderboard() {
 			return;
 		}
 	}
-	fprintf(lead, "%s %d", player1.name, player1.win);
-	fprintf(lead, " %s %d", player2.name, player2.win);
+	fprintf(lead,"%s %d\n", player1.name, player1.win);
+	fprintf(lead,"%s %d\n", player2.name, player2.win);
 
 	/*for (int i = 0; i < SIZE && !feof(lead); i++)
 	{
-	*/	
-		
-
 		/*if (strcmp(p[i].name, player1.name) != 0) {
 			fopen_s(&lead, "leaderboard.txt", "r+");
 			fprintf(lead, "%s %d", player1.name, player1.win);
@@ -369,47 +376,65 @@ void leaderboard() {
 			fprintf(lead, "%s %d", player1.name, player1.win);
 			fprintf(lead, " %s %d", player2.name, player2.win);
 			fclose(lead);
-		}*/
-	/*}*/
+		}
+	}*/
 	
 	fclose(lead);
 }
 
 void printLead() 
 {
-	int index[SIZE];
-	typedef struct t_leaderBoard {
-		char name[NAME_SIZE];
-		int win;
-	}player;
+	/*
+	if (player1.win != 0)
+	{
+		printf("%s %d\n", player1.name, player1.win);
+	}
+	if (player2.win != 0)
+	{
+		printf("%s %d\n", player2.name, player2.win);
+		while (getchar() != '\n');
+	}
+	while (getchar() != '\n');
+	*/
+
+	int howMany = 0;
+	player temp;
 	player p[SIZE] = {};
 	fopen_s(&lead, "leaderboard.txt", "r+");
 	if (lead == NULL) { printf("leaderboard.txt is NULL"); }
 	for (int i = 0; i < SIZE && !feof(lead); i++)
 	{
 		fscanf(lead, "%s %d%*c", p[i].name, &p[i].win);
-		printf("%s %d\n", p[i].name, p[i].win);
+		howMany++;
 	}
-	fclose(lead);
-	while (getchar() != '\n');
-}
-	
-	
-	
-	
-	
-	
-	
-	/*int i, j;
-	for (i = 0; i < SIZE; i++)								//simple initialization for the index array
-		index[i] = i;										//simple substitution sort, using the index
-	for (i = 0; i < SIZE - 1; i++) {
-		for (j = i + 1; j < SIZE; j++) {
-			if (p[index[i]].win < p[index[j]].win) {		//compare thru the index
-				int temp = index[i];						//and swap only the indices
-				index[i] = index[j];
-				index[j] = temp;
+	int i, j;
+	for (i = 0; i < howMany; i++)
+	{
+		for (j = 0; j < howMany - 1; j++)
+		{
+			if (p[j].win < p[j + 1].win)
+			{
+				temp = p[j];
+				p[j] = p[j + 1];
+				p[j + 1] = temp;
+			}
+			if (strcmp(p[j].name, p[j + 1].name) == 0) {
+				p[j].win = p[j].win + p[j + 1].win;
+				p[j + 1].win = 0;
 			}
 		}
 	}
-}*/
+
+
+	for (int i = 0; i < howMany-1; i++)
+	{
+		if (p[i].win != 0) {
+			if (i <= 9) {
+				printf("%s %d\n", p[i].name, p[i].win);
+			}
+		}
+	}
+	fclose(lead);
+	while (getchar() != '\n');
+
+}    
